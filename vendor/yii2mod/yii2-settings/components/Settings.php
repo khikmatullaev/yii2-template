@@ -67,6 +67,27 @@ class Settings extends Component
     }
 
     /**
+     * Get's all values in the specific section.
+     *
+     * @param string $section
+     * @param null $default
+     *
+     * @return mixed
+     */
+    public function getAllBySection($section, $default = null)
+    {
+        $items = $this->getSettingsConfig();
+
+        if (isset($items[$section])) {
+            $this->setting = ArrayHelper::getColumn($items[$section], 'value');
+        } else {
+            $this->setting = $default;
+        }
+
+        return $this->setting;
+    }
+
+    /**
      * Get's the value for the given section and key.
      *
      * @param string $section
@@ -100,7 +121,7 @@ class Settings extends Component
      *
      * @return bool
      */
-    public function set($section, $key, $value, $type = null)
+    public function set($section, $key, $value, $type = null): bool
     {
         if ($this->model->setSetting($section, $key, $value, $type)) {
             if ($this->invalidateCache()) {
@@ -108,7 +129,7 @@ class Settings extends Component
             }
         }
 
-        return null;
+        return false;
     }
 
     /**
@@ -119,7 +140,7 @@ class Settings extends Component
      *
      * @return bool
      */
-    public function has($section, $key)
+    public function has($section, $key): bool
     {
         $setting = $this->get($section, $key);
 
@@ -134,7 +155,7 @@ class Settings extends Component
      *
      * @return bool
      */
-    public function remove($section, $key)
+    public function remove($section, $key): bool
     {
         if ($this->model->removeSetting($section, $key)) {
             if ($this->invalidateCache()) {
@@ -142,7 +163,7 @@ class Settings extends Component
             }
         }
 
-        return null;
+        return false;
     }
 
     /**
@@ -150,7 +171,7 @@ class Settings extends Component
      *
      * @return int
      */
-    public function removeAll()
+    public function removeAll(): int
     {
         return $this->model->removeAllSettings();
     }
@@ -163,7 +184,7 @@ class Settings extends Component
      *
      * @return bool
      */
-    public function activate($section, $key)
+    public function activate($section, $key): bool
     {
         return $this->model->activateSetting($section, $key);
     }
@@ -176,7 +197,7 @@ class Settings extends Component
      *
      * @return bool
      */
-    public function deactivate($section, $key)
+    public function deactivate($section, $key): bool
     {
         return $this->model->deactivateSetting($section, $key);
     }
@@ -186,7 +207,7 @@ class Settings extends Component
      *
      * @return array
      */
-    protected function getSettingsConfig()
+    protected function getSettingsConfig(): array
     {
         if (!$this->cache instanceof Cache) {
             $this->items = $this->model->getSettings();
@@ -208,7 +229,7 @@ class Settings extends Component
      *
      * @return bool
      */
-    public function invalidateCache()
+    public function invalidateCache(): bool
     {
         if ($this->cache !== null) {
             $this->cache->delete($this->cacheKey);

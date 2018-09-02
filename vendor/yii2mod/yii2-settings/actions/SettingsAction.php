@@ -34,6 +34,19 @@ class SettingsAction extends Action
     public $modelClass;
 
     /**
+     * @var callable a PHP callable that will be called for save the settings.
+     * If not set, [[saveSettings()]] will be used instead.
+     * The signature of the callable should be:
+     *
+     * ```php
+     * function ($model) {
+     *      // $model is the object which will be used to validate the attributes
+     * }
+     * ```
+     */
+    public $saveSettings;
+
+    /**
      * @var callable a PHP callable that will be called to prepare a model.
      * If not set, [[prepareModel()]] will be used instead.
      * The signature of the callable should be:
@@ -45,6 +58,11 @@ class SettingsAction extends Action
      * ```
      */
     public $prepareModel;
+
+    /**
+     * @var string
+     */
+    public $sectionName;
 
     /**
      * @var string message to be set on successful save a model
@@ -87,9 +105,7 @@ class SettingsAction extends Action
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $this->trigger(self::EVENT_BEFORE_SAVE, $event);
 
-            foreach ($model->toArray() as $key => $value) {
-                Yii::$app->settings->set($model->formName(), $key, $value);
-            }
+            $this->saveSettings($model);
 
             $this->trigger(self::EVENT_AFTER_SAVE, $event);
 
@@ -108,18 +124,50 @@ class SettingsAction extends Action
     }
 
     /**
-     * Prepares the model which will be used to validate the attributes
+     * Prepares the model which will be used to validate the attributes.
      *
      * @param Model $model
      */
     protected function prepareModel(Model $model)
     {
-        if ($this->prepareModel !== null) {
+        if (is_callable($this->prepareModel)) {
             call_user_func($this->prepareModel, $model);
         } else {
             foreach ($model->attributes() as $attribute) {
-                $model->{$attribute} = Yii::$app->settings->get($model->formName(), $attribute);
+                $value = Yii::$app->settings->get($this->getSection($model), $attribute);
+
+                if (!is_null($value)) {
+                    $model->{$attribute} = $value;
+                }
             }
         }
+    }
+
+    /**
+     * @param Model $model
+     */
+    protected function saveSettings(Model $model)
+    {
+        if (is_callable($this->saveSettings)) {
+            call_user_func($this->saveSettings, $model);
+        } else {
+            foreach ($model->toArray() as $key => $value) {
+                Yii::$app->settings->set($this->getSection($model), $key, $value);
+            }
+        }
+    }
+
+    /**
+     * @param Model $model
+     *
+     * @return string
+     */
+    protected function getSection(Model $model): string
+    {
+        if ($this->sectionName !== null) {
+            return $this->sectionName;
+        }
+
+        return $model->formName();
     }
 }

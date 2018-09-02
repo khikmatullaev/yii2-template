@@ -11,22 +11,37 @@
     "license": "MIT",
     "authors": [
         {
-            "name": "Igor Chepurnoy",
-            "email": "igorzfort@gmail.com"
+            "name": "Igor Chepurnoi",
+            "email": "chepurnoi.igor@gmail.com"
         }
     ],
     "require": {
-        "php": ">=5.5",
-        "yiisoft/yii2": ">=2.0.8",
+        "php": ">=7.1.0",
+        "yiisoft/yii2": "~2.0.10",
         "yii2mod/yii2-editable": "*",
         "yii2mod/yii2-enum": "*"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "~2.0"
+        "friendsofphp/php-cs-fixer": "~2.0",
+        "phpunit/phpunit": "^7.3"
     },
     "autoload": {
         "psr-4": {
             "yii2mod\\settings\\": ""
         }
-    }
+    },
+    "scripts": {
+        "phpcs": "php-cs-fixer fix -v --diff --dry-run --allow-risky=yes;",
+        "phpunit": "phpunit --coverage-text",
+        "test": [
+            "@phpunit",
+            "@phpcs"
+        ]
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ]
 }

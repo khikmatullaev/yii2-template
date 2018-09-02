@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "yiisoft/yii2": "~2.0.0"
+        "yiisoft/yii2": "~2.0.13"
     },
     "repositories": [
         {
@@ -27,7 +27,7 @@
         }
     ],
     "autoload": {
-        "psr-4": { "yii\\httpclient\\": "" }
+        "psr-4": { "yii\\httpclient\\": "src" }
     },
     "extra": {
         "branch-alias": {

@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/servicetest.iml" filepath="$PROJECT_DIR$/.idea/servicetest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/trawork.iml" filepath="$PROJECT_DIR$/.idea/trawork.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/trawork.iml" filepath="$PROJECT_DIR$/.idea/trawork.iml" />
     </modules>
   </component>
 </project>

@@ -4,14 +4,14 @@ $params = require(__DIR__ . '/params.php');
 $db = require(__DIR__ . '/db.php');
 
 $config = [
-    'id' => 'basic',
+    'id' => 'trawork',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'AIBzUhvUenECF3hXqtBw5uNw0KrSSB2l',
-            'baseUrl' => '/servicetest'
+            'baseUrl' => '/trawork'
         ],
         'cache' => [
             'class' => 'yii\caching\FileCache',

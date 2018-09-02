@@ -1,6 +1,48 @@
 Change Log: `yii2-krajee-base`
 ==============================
 
+## Version 1.9.3
+
+**Date:** 29-Aug-2018
+
+- Update `Module` to include `bsVersion` configuration.
+- Update `AssetBundle` to include new method `registerBundle` for reading BS Version from widgets.
+- Update `BootstrapTrait` to include better BS Version parsing methods.
+
+## Version 1.9.2
+
+**Date:** 20-Aug-2018
+
+- Enhance bootstrap 4 addon rendering.
+- Reformat and reorganize code.
+- Update animate.css to release v3.7.0.
+
+## Version 1.9.1
+
+**Date:** 16-Aug-2018
+
+- (enh #92): Remove `yii2-bootstrap4` dependency.
+- (enh #90): Implement AddonTrait.
+
+## Version 1.9.0
+
+**Date:** 12-Aug-2018
+
+- Refactor code for Bootstrap 4 support.
+- (enh #87): Update `animate.css` to latest release.
+- (enh #86): Refactor source code into `src` folder.
+- (enh #85): Add bootstrap 4 support.
+- (enh #83): Correct CheckboxX repo in Config class.
+- (enh #82): Enhance `getModule` to retrieve correct module.
+
+## Version 1.8.9
+
+**Date:** 29-Sep-2017
+
+- (enh #80): Add ability to configure module id in widgets.
+- (enh #79): New property `hashVarLoadPosition` for InputWidget and Widget.
+- (enh kartik-v/yii2-widget-switchinput#29): Enhance boolean inputs for better value init in non model scenario.
+
 ## Version 1.8.8
 
 **Date:** 22-Feb-2017

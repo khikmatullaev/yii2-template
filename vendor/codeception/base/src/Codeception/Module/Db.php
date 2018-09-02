@@ -45,6 +45,12 @@ use Codeception\TestInterface;
  * * populate: false - whether the the dump should be loaded before the test suite is started
  * * cleanup: false - whether the dump should be reloaded before each test
  * * reconnect: false - whether the module should reconnect to the database before each test
+ * * waitlock: 0 - wait lock (in seconds) that the database session should use for DDL statements
+ * * ssl_key - path to the SSL key (MySQL specific, @see http://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-key)
+ * * ssl_cert - path to the SSL certificate (MySQL specific, @see http://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-ssl-cert)
+ * * ssl_ca - path to the SSL certificate authority (MySQL specific, @see http://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-ssl-ca)
+ * * ssl_verify_server_cert - disables certificate CN verification (MySQL specific, @see http://php.net/manual/de/ref.pdo-mysql.php)
+ * * ssl_cipher - list of one or more permissible ciphers to use for SSL encryption (MySQL specific, @see http://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-cipher)
  *
  * ## Example
  *
@@ -58,6 +64,12 @@ use Codeception\TestInterface;
  *              populate: true
  *              cleanup: true
  *              reconnect: true
+ *              waitlock: 10
+ *              ssl_key: '/path/to/client-key.pem'
+ *              ssl_cert: '/path/to/client-cert.pem'
+ *              ssl_ca: '/path/to/ca-cert.pem'
+ *              ssl_verify_server_cert: false
+ *              ssl_cipher: 'AES256-SHA'
  *
  * ## SQL data dump
  *
@@ -195,6 +207,7 @@ class Db extends CodeceptionModule implements DbInterface
         'populate' => false,
         'cleanup' => false,
         'reconnect' => false,
+        'waitlock' => 0,
         'dump' => null,
         'populator' => null,
     ];
@@ -222,6 +235,11 @@ class Db extends CodeceptionModule implements DbInterface
     public function _initialize()
     {
         $this->connect();
+    }
+
+    public function __destruct()
+    {
+        $this->disconnect();
     }
 
     public function _beforeSuite($settings = [])
@@ -272,8 +290,48 @@ class Db extends CodeceptionModule implements DbInterface
 
     private function connect()
     {
+        $options = [];
+
+        /**
+         * @see http://php.net/manual/en/pdo.construct.php
+         * @see http://php.net/manual/de/ref.pdo-mysql.php#pdo-mysql.constants
+         */
+        if (array_key_exists('ssl_key', $this->config)
+            && !empty($this->config['ssl_key'])
+            && defined('\PDO::MYSQL_ATTR_SSL_KEY')
+        ) {
+            $options[\PDO::MYSQL_ATTR_SSL_KEY] = (string) $this->config['ssl_key'];
+        }
+
+        if (array_key_exists('ssl_cert', $this->config)
+            && !empty($this->config['ssl_cert'])
+            && defined('\PDO::MYSQL_ATTR_SSL_CERT')
+        ) {
+            $options[\PDO::MYSQL_ATTR_SSL_CERT] = (string) $this->config['ssl_cert'];
+        }
+
+        if (array_key_exists('ssl_ca', $this->config)
+            && !empty($this->config['ssl_ca'])
+            && defined('\PDO::MYSQL_ATTR_SSL_CA')
+        ) {
+            $options[\PDO::MYSQL_ATTR_SSL_CA] = (string) $this->config['ssl_ca'];
+        }
+
+        if (array_key_exists('ssl_cipher', $this->config)
+            && !empty($this->config['ssl_cipher'])
+            && defined('\PDO::MYSQL_ATTR_SSL_CIPHER')
+        ) {
+            $options[\PDO::MYSQL_ATTR_SSL_CIPHER] = (string) $this->config['ssl_cipher'];
+        }
+
+        if (array_key_exists('ssl_verify_server_cert', $this->config)
+            && defined('\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')
+        ) {
+            $options[\PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT] = (boolean) $this->config[ 'ssl_verify_server_cert' ];
+        }
+
         try {
-            $this->driver = Driver::create($this->config['dsn'], $this->config['user'], $this->config['password']);
+            $this->driver = Driver::create($this->config['dsn'], $this->config['user'], $this->config['password'], $options);
         } catch (\PDOException $e) {
             $message = $e->getMessage();
             if ($message === 'could not find driver') {
@@ -283,20 +341,26 @@ class Db extends CodeceptionModule implements DbInterface
 
             throw new ModuleException(__CLASS__, $message . ' while creating PDO connection');
         }
+
+        if ($this->config['waitlock']) {
+            $this->driver->setWaitLock($this->config['waitlock']);
+        }
+
         $this->debugSection('Db', 'Connected to ' . $this->driver->getDb());
         $this->dbh = $this->driver->getDbh();
     }
 
     private function disconnect()
     {
-        $this->debugSection('Db', 'Disconnected');
-        $this->dbh = null;
         $this->driver = null;
+        $this->dbh = null;
+        $this->debugSection('Db', 'Disconnected');
     }
 
     public function _before(TestInterface $test)
     {
         if ($this->config['reconnect']) {
+            $this->disconnect();
             $this->connect();
         }
         if ($this->config['cleanup'] && !$this->populated) {
@@ -395,6 +459,15 @@ class Db extends CodeceptionModule implements DbInterface
      */
     public function haveInDatabase($table, array $data)
     {
+        $lastInsertId = $this->_insertInDatabase($table, $data);
+
+        $this->addInsertedRow($table, $data, $lastInsertId);
+
+        return $lastInsertId;
+    }
+
+    public function _insertInDatabase($table, array $data)
+    {
         $query = $this->driver->insert($table, $data);
         $parameters = array_values($data);
         $this->debugSection('Query', $query);
@@ -408,9 +481,6 @@ class Db extends CodeceptionModule implements DbInterface
             // such as tables without _id_seq in PGSQL
             $lastInsertId = 0;
         }
-
-        $this->addInsertedRow($table, $data, $lastInsertId);
-
         return $lastInsertId;
     }
 
@@ -504,6 +574,16 @@ class Db extends CodeceptionModule implements DbInterface
         return (int) $this->proceedSeeInDatabase($table, 'count(*)', $criteria);
     }
 
+    /**
+     * Fetches all values from the column in database.
+     * Provide table name, desired column and criteria.
+     *
+     * @param string $table
+     * @param string $column
+     * @param array  $criteria
+     *
+     * @return array
+     */
     protected function proceedSeeInDatabase($table, $column, $criteria)
     {
         $query = $this->driver->select($column, $table, $criteria);
@@ -539,10 +619,25 @@ class Db extends CodeceptionModule implements DbInterface
         $this->debugSection('Query', $query);
         $this->debugSection('Parameters', $parameters);
         $sth = $this->driver->executeQuery($query, $parameters);
-        
+
         return $sth->fetchAll(\PDO::FETCH_COLUMN, 0);
     }
 
+    /**
+     * Fetches all values from the column in database.
+     * Provide table name, desired column and criteria.
+     *
+     * ``` php
+     * <?php
+     * $mails = $I->grabFromDatabase('users', 'email', array('name' => 'RebOOter'));
+     * ```
+     *
+     * @param string $table
+     * @param string $column
+     * @param array  $criteria
+     *
+     * @return array
+     */
     public function grabFromDatabase($table, $column, $criteria = [])
     {
         return $this->proceedSeeInDatabase($table, $column, $criteria);
@@ -560,7 +655,20 @@ class Db extends CodeceptionModule implements DbInterface
     {
         return $this->countInDatabase($table, $criteria);
     }
-    
+
+    /**
+     * Update an SQL record into a database.
+     *
+     * ```php
+     * <?php
+     * $I->updateInDatabase('users', array('isAdmin' => true), array('email' => 'miles@davis.com'));
+     * ?>
+     * ```
+     *
+     * @param string $table
+     * @param array $data
+     * @param array $criteria
+     */
     public function updateInDatabase($table, array $data, array $criteria = [])
     {
         $query = $this->driver->update($table, $data, $criteria);

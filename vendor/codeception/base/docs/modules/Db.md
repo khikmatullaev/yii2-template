@@ -35,6 +35,12 @@ if you run into problems loading dumps and cleaning databases.
 * populate: false - whether the the dump should be loaded before the test suite is started
 * cleanup: false - whether the dump should be reloaded before each test
 * reconnect: false - whether the module should reconnect to the database before each test
+* waitlock: 0 - wait lock (in seconds) that the database session should use for DDL statements
+* ssl_key - path to the SSL key (MySQL specific, @see http://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-key)
+* ssl_cert - path to the SSL certificate (MySQL specific, @see http://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-ssl-cert)
+* ssl_ca - path to the SSL certificate authority (MySQL specific, @see http://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-ssl-ca)
+* ssl_verify_server_cert - disables certificate CN verification (MySQL specific, @see http://php.net/manual/de/ref.pdo-mysql.php)
+* ssl_cipher - list of one or more permissible ciphers to use for SSL encryption (MySQL specific, @see http://php.net/manual/de/ref.pdo-mysql.php#pdo.constants.mysql-attr-cipher)
 
 ## Example
 
@@ -48,6 +54,12 @@ if you run into problems loading dumps and cleaning databases.
              populate: true
              cleanup: true
              reconnect: true
+             waitlock: 10
+             ssl_key: '/path/to/client-key.pem'
+             ssl_cert: '/path/to/client-cert.pem'
+             ssl_ca: '/path/to/ca-cert.pem'
+             ssl_verify_server_cert: false
+             ssl_cipher: 'AES256-SHA'
 
 ## SQL data dump
 
@@ -165,7 +177,6 @@ SELECT COUNT(*) FROM `users` WHERE `name` = 'Davert' AND `email` LIKE 'davert%'
 * driver - contains the Connection Driver
 
 
-
 ## Actions
 
 ### dontSeeInDatabase
@@ -177,9 +188,19 @@ Provide table name and column values.
 
 ``` php
 <?php
-$I->dontSeeInDatabase('users', array('name' => 'Davert', 'email' => 'davert@mail.com'));
+$I->dontSeeInDatabase('users', ['name' => 'Davert', 'email' => 'davert@mail.com']);
 ```
 Fails if such user was found.
+
+Comparison expressions can be used as well:
+
+```php
+<?php
+$I->dontSeeInDatabase('posts', ['num_comments >=' => '0']);
+$I->dontSeeInDatabase('users', ['email like' => 'miles%']);
+```
+
+Supported operators: `<`, `>`, `>=`, `<=`, `!=`, `like`.
 
  * `param string` $table
  * `param array` $criteria
@@ -204,18 +225,19 @@ $mails = $I->grabColumnFromDatabase('users', 'email', array('name' => 'RebOOter'
 
 ### grabFromDatabase
  
-Fetches a single column value from a database.
+Fetches all values from the column in database.
 Provide table name, desired column and criteria.
 
 ``` php
 <?php
-$mail = $I->grabFromDatabase('users', 'email', array('name' => 'Davert'));
+$mails = $I->grabFromDatabase('users', 'email', array('name' => 'RebOOter'));
 ```
 
  * `param string` $table
  * `param string` $column
- * `param array` $criteria
+ * `param array`  $criteria
 
+ * `return` array
 
 
 ### grabNumRecords
@@ -253,11 +275,21 @@ __not documented__
 Asserts that a row with the given column values exists.
 Provide table name and column values.
 
-``` php
+```php
 <?php
-$I->seeInDatabase('users', array('name' => 'Davert', 'email' => 'davert@mail.com'));
+$I->seeInDatabase('users', ['name' => 'Davert', 'email' => 'davert@mail.com']);
 ```
 Fails if no such user found.
+
+Comparison expressions can be used as well:
+
+```php
+<?php
+$I->seeInDatabase('posts', ['num_comments >=' => '0']);
+$I->seeInDatabase('users', ['email like' => 'miles@davis.com']);
+```
+
+Supported operators: `<`, `>`, `>=`, `<=`, `!=`, `like`.
 
  * `param string` $table
  * `param array` $criteria
@@ -279,6 +311,17 @@ $I->seeNumRecords(1, 'users', ['name' => 'davert'])
 
 
 ### updateInDatabase
-__not documented__
+ 
+Update an SQL record into a database.
 
-<p>&nbsp;</p><div class="alert alert-warning">Module reference is taken from the source code. <a href="https://github.com/Codeception/Codeception/tree/2.3/src/Codeception/Module/Db.php">Help us to improve documentation. Edit module reference</a></div>
+```php
+<?php
+$I->updateInDatabase('users', array('isAdmin' => true), array('email' => 'miles@davis.com'));
+?>
+```
+
+ * `param string` $table
+ * `param array` $data
+ * `param array` $criteria
+
+<p>&nbsp;</p><div class="alert alert-warning">Module reference is taken from the source code. <a href="https://github.com/Codeception/Codeception/tree/2.4/src/Codeception/Module/Db.php">Help us to improve documentation. Edit module reference</a></div>

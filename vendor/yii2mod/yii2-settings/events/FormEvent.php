@@ -20,7 +20,7 @@ class FormEvent extends Event
     /**
      * @return Model
      */
-    public function getForm()
+    public function getForm(): Model
     {
         return $this->_form;
     }

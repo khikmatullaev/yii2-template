@@ -3,7 +3,6 @@
 
 Special module for using asserts in your tests.
 
-
 ## Actions
 
 ### assertArrayHasKey
@@ -213,6 +212,14 @@ $I->assertNotEquals($calculator->add(0.1, 0.2), 0.4, 'Calculator should add the 
  * `param float`  $delta
 
 
+### assertNotFalse
+ 
+Checks that the condition is NOT false (everything but false)
+
+ * `param`        $condition
+ * `param string` $message
+
+
 ### assertNotInstanceOf
  
  * `param` $class
@@ -243,6 +250,14 @@ Checks that two variables are not same
 
  * `param`        $expected
  * `param`        $actual
+ * `param string` $message
+
+
+### assertNotTrue
+ 
+Checks that the condition is NOT true (everything but true)
+
+ * `param`        $condition
  * `param string` $message
 
 
@@ -332,4 +347,4 @@ Fails the test with message.
 
  * `param` $message
 
-<p>&nbsp;</p><div class="alert alert-warning">Module reference is taken from the source code. <a href="https://github.com/Codeception/Codeception/tree/2.3/src/Codeception/Module/Asserts.php">Help us to improve documentation. Edit module reference</a></div>
+<p>&nbsp;</p><div class="alert alert-warning">Module reference is taken from the source code. <a href="https://github.com/Codeception/Codeception/tree/2.4/src/Codeception/Module/Asserts.php">Help us to improve documentation. Edit module reference</a></div>

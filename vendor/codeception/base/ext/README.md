@@ -2,7 +2,7 @@
 
 ## DotReporter
 
-[See Source](https://github.com/Codeception/Codeception/blob/2.3/ext/DotReporter.php)
+[See Source](https://github.com/Codeception/Codeception/blob/2.4/ext/DotReporter.php)
 
 DotReporter provides less verbose output for test execution.
 Like PHPUnit printer it prints dots "." for successful testes and "F" for failures.
@@ -38,7 +38,7 @@ Use this extension as an example for building custom reporters.
 
 ## Logger
 
-[See Source](https://github.com/Codeception/Codeception/blob/2.3/ext/Logger.php)
+[See Source](https://github.com/Codeception/Codeception/blob/2.4/ext/Logger.php)
 
 Log suites/tests/steps using Monolog library.
 Monolog should be installed additionally by Composer.
@@ -65,7 +65,7 @@ extensions:
 
 ## Recorder
 
-[See Source](https://github.com/Codeception/Codeception/blob/2.3/ext/Recorder.php)
+[See Source](https://github.com/Codeception/Codeception/blob/2.4/ext/Recorder.php)
 
 Saves a screenshot of each step in acceptance tests and shows them as a slideshow on one HTML page (here's an [example](http://codeception.com/images/recorder.gif))
 Activated only for suites with WebDriver module enabled.
@@ -86,6 +86,7 @@ extensions:
 
 * `delete_successful` (default: true) - delete screenshots for successfully passed tests  (i.e. log only failed and errored tests).
 * `module` (default: WebDriver) - which module for screenshots to use. Set `AngularJS` if you want to use it with AngularJS module. Generally, the module should implement `Codeception\Lib\Interfaces\ScreenshotSaver` interface.
+* `ignore_steps` (default: []) - array of step names that should not be recorded, * wildcards supported
 
 
 #### Examples:
@@ -93,17 +94,49 @@ extensions:
 ``` yaml
 extensions:
     enabled:
-        Codeception\Extension\Recorder:
+        - Codeception\Extension\Recorder:
             module: AngularJS # enable for Angular
             delete_successful: false # keep screenshots of successful tests
+            ignore_steps: [have, grab*]
 ```
 
 
 
 
+## RunBefore
+
+[See Source](https://github.com/Codeception/Codeception/blob/2.4/ext/RunBefore.php)
+
+Extension for execution of some processes before running tests.
+
+Processes can be independent and dependent.
+Independent processes run independently of each other.
+Dependent processes run sequentially one by one.
+
+Can be configured in suite config:
+
+```yaml
+# acceptance.suite.yml
+extensions:
+    enabled:
+        - Codeception\Extension\RunBefore:
+            - independent_process_1
+            -
+                - dependent_process_1_1
+                - dependent_process_1_2
+            - independent_process_2
+            -
+                - dependent_process_2_1
+                - dependent_process_2_2
+```
+
+HINT: you can use different configurations per environment.
+
+
+
 ## RunFailed
 
-[See Source](https://github.com/Codeception/Codeception/blob/2.3/ext/RunFailed.php)
+[See Source](https://github.com/Codeception/Codeception/blob/2.4/ext/RunFailed.php)
 
 Saves failed tests into tests/log/failed in order to rerun failed tests.
 
@@ -112,6 +145,12 @@ To rerun failed tests just run the `failed` group:
 ```
 php codecept run -g failed
 ```
+
+To change failed group name add:
+```
+--override "extensions: config: Codeception\Extension\RunFailed: fail-group: another_group1"
+```
+Remember: if you run tests and they generated custom-named fail group, to run this group, you should add override too
 
 Starting from Codeception 2.1 **this extension is enabled by default**.
 
@@ -126,7 +165,7 @@ On each execution failed tests are logged and saved into `tests/_output/failed` 
 
 ## RunProcess
 
-[See Source](https://github.com/Codeception/Codeception/blob/2.3/ext/RunProcess.php)
+[See Source](https://github.com/Codeception/Codeception/blob/2.4/ext/RunProcess.php)
 
 Extension to start and stop processes per suite.
 Can be used to start/stop selenium server, chromedriver, phantomjs, mailcatcher, etc.
@@ -173,7 +212,7 @@ HINT: you can use different configurations per environment.
 
 ## SimpleReporter
 
-[See Source](https://github.com/Codeception/Codeception/blob/2.3/ext/SimpleReporter.php)
+[See Source](https://github.com/Codeception/Codeception/blob/2.4/ext/SimpleReporter.php)
 
 This extension demonstrates how you can implement console output of your own.
 Recommended to be used for development purposes only.

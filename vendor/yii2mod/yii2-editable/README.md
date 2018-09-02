@@ -1,5 +1,10 @@
-Yii2 Editable Widget
-=====================
+<p align="center">
+    <a href="https://github.com/yiisoft" target="_blank">
+        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
+    </a>
+    <h1 align="center">Yii2 Editable Widget</h1>
+    <br>
+</p>
 
 Renders a [X-Editable Input](http://vitalets.github.io/x-editable/index.html) allowing to use the amazing inline capabilities of [X-Editable Plugin](http://vitalets.github.io/x-editable/index.html). 
 
@@ -19,7 +24,7 @@ php composer.phar require --prefer-dist yii2mod/yii2-editable "*"
 
 or add
 
-```json
+```
 "yii2mod/yii2-editable": "*"
 ```
 
@@ -33,7 +38,7 @@ Usage Editable column
 **Text column:**
 ```php
  [
-    'class' => EditableColumn::className(),
+    'class' => EditableColumn::class,
     'attribute' => 'username',
     'url' => ['change-username'],
  ],
@@ -41,7 +46,7 @@ Usage Editable column
 **Select column:**
 ```php
 [
-    'class' => EditableColumn::className(),
+    'class' => EditableColumn::class,
     'attribute' => 'status',
     'url' => ['change-username'],
     'type' => 'select',
@@ -57,16 +62,15 @@ Usage Editable column
 
 2) And add to your controller
 ```php
- public function actions()
-      {
-          return [
-              'change-username' => [
-                  'class' => EditableAction::className(),
-                  'modelClass' => UserModel::className(),
-                  'forceCreate' => false
-              ]
-          ];
-      }
+public function actions()
+{
+    return [
+        'change-username' => [
+            'class' => EditableAction::class,
+            'modelClass' => UserModel::class,
+        ],
+    ];
+}
 ```
 Usage Editable widget
 ---------------------------------
@@ -74,19 +78,18 @@ Usage Editable widget
 1) As a widget with a model
 
 ```php
-\yii2mod\editable\Editable::widget( [
+\yii2mod\editable\Editable::widget([
     'model' => $model,
     'attribute' => 'firstName',
-    'url' => '/profile/update'
+    'url' => '/profile/update',
 ]);
 ```
 
 2) With ActiveForm
 
 ```php
-echo $form->field($model, "firstName")->widget(\yii2mod\editable\Editable::className(), [
+echo $form->field($model, "firstName")->widget(\yii2mod\editable\Editable::class, [
     'url' => '/profile/update',
-    'mode' => 'popup'
+    'mode' => 'popup',
 ]);
-
 ```

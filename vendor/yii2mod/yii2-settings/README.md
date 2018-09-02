@@ -1,24 +1,31 @@
-Yii2 Settings
-=============
-Simple Yii2 settings extension
+<p align="center">
+    <a href="https://github.com/yiisoft" target="_blank">
+        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
+    </a>
+    <h1 align="center">Yii2 Settings Extension</h1>
+    <br>
+</p>
+
+Persistent, application-wide settings for Yii2.
 
 [![Latest Stable Version](https://poser.pugx.org/yii2mod/yii2-settings/v/stable)](https://packagist.org/packages/yii2mod/yii2-settings) [![Total Downloads](https://poser.pugx.org/yii2mod/yii2-settings/downloads)](https://packagist.org/packages/yii2mod/yii2-settings) [![License](https://poser.pugx.org/yii2mod/yii2-settings/license)](https://packagist.org/packages/yii2mod/yii2-settings)
 [![Build Status](https://travis-ci.org/yii2mod/yii2-settings.svg?branch=master)](https://travis-ci.org/yii2mod/yii2-settings)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/yii2mod/yii2-settings/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/yii2mod/yii2-settings/?branch=master)
 
-Installation   
+Installation
 ------------
 
 The preferred way to install this extension is through [composer](http://getcomposer.org/download/).
 
 Either run
 
-```
+```sh
 php composer.phar require --prefer-dist yii2mod/yii2-settings "*"
 ```
 
 or add
 
-```json
+```
 "yii2mod/yii2-settings": "*"
 ```
 
@@ -31,7 +38,7 @@ Configuration
 
 Before usage this extension, we'll also need to prepare the database.
 
-```
+```sh
 php yii migrate --migrationPath=@vendor/yii2mod/yii2-settings/migrations
 ```
 
@@ -39,30 +46,24 @@ php yii migrate --migrationPath=@vendor/yii2mod/yii2-settings/migrations
 
 To access the module, you need to configure the modules array in your application configuration:
 ```php
-'admin' => [
-    'modules' => [
-        'settings' => [
-            'class' => 'yii2mod\settings\Module',
-            // Also you can override some controller properties in following way:
-            'controllerMap' => [
-                'default' => [
-                    'class' => 'yii2mod\settings\controllers\DefaultController',
-                    'searchClass' => [
-                        'class' => 'yii2mod\settings\models\search\SettingSearch',
-                        'pageSize' => 25
-                    ],
-                    'modelClass' => 'Your own model class',
-                    'indexView' => 'custom path to index view file',
-                    'createView' => 'custom path to create view file',
-                    'updateView' => 'custom path to update view file',
-                ]
-            ]
-        ],
+'modules' => [
+    'settings' => [
+        'class' => 'yii2mod\settings\Module',
     ],
-]
-```    
-> You can then access settings page by the following URL:
-http://localhost/path/to/index.php?r=admin/settings/
+],
+```
+
+You can then access settings management section through the following URL:
+
+```
+http://localhost/path/to/index.php?r=settings
+```
+
+or if you have enabled pretty URLs, you may use the following URL:
+
+```
+http://localhost/path/to/index.php/settings
+```
 
 **Component Setup**
 
@@ -72,9 +73,9 @@ To use the Setting Component, you need to configure the components array in your
     'settings' => [
         'class' => 'yii2mod\settings\components\Settings',
     ],
-]
+],
 ```
-    
+
 Usage:
 ---------
 ```php
@@ -101,13 +102,16 @@ $settings->remove('section', 'key');
 // Removes all settings
 $settings->removeAll();
 
-$settings->invalidateCache(); // automatically called on set(), remove();  
+// Get's all values in the specific section.
+$settings->getAllBySection('section');
+
+$settings->invalidateCache(); // automatically called on set(), remove();
 ```
 
 Manage custom settings
 ----------------------
 
-You can use your own form model to manage custom settings for your web application via `SettingsAction`. 
+You can use your own form model to manage custom settings for your web application via `SettingsAction`.
 To use the `SettingsAction` class you need to follow the following steps:
 
 1) Create your own model, for example:
@@ -219,7 +223,7 @@ class SiteController extends Controller
 ```
 
 *Now you can access to the settings page by the following URL: http://localhost/path/to/index.php?r=site/manage-settings/*
-                       
+
 
 
 Internationalization

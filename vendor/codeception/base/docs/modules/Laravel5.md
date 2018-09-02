@@ -2,29 +2,12 @@
 
 
 
-This module allows you to run functional tests for Laravel 5.
+This module allows you to run functional tests for Laravel 5.1+
 It should **not** be used for acceptance tests.
 See the Acceptance tests section below for more details.
 
-As of Codeception 2.2 this module only works for Laravel 5.1 and later releases.
-If you want to test a Laravel 5.0 application you have to use Codeception 2.1.
-You can also upgrade your Laravel application to 5.1, for more details check the Laravel Upgrade Guide
-at <https://laravel.com/docs/master/upgrade>.
-
 ## Demo project
-<https://github.com/janhenkgerritsen/codeception-laravel5-sample>
-
-## Status
-
-* Maintainer: **Jan-Henk Gerritsen**
-* Stability: **stable**
-
-## Example
-
-    modules:
-        enabled:
-            - Laravel5:
-                environment_file: .env.testing
+<https://github.com/codeception/codeception-laravel5-sample>
 
 ## Config
 
@@ -45,6 +28,27 @@ at <https://laravel.com/docs/master/upgrade>.
 * disable_model_events: `boolean`, default `false` - disable model events.
 * url: `string`, default `` - the application URL.
 
+### Example #1 (`functional.suite.yml`)
+
+Enabling module:
+
+```yml
+modules:
+    enabled:
+        - Laravel5
+```
+
+### Example #2 (`functional.suite.yml`)
+
+Enabling module with custom .env file
+
+```yml
+modules:
+    enabled:
+        - Laravel5:
+            environment_file: .env.testing
+```
+
 ## API
 
 * app - `Illuminate\Foundation\Application`
@@ -63,18 +67,21 @@ at <https://laravel.com/docs/master/upgrade>.
 ## Acceptance tests
 
 You should not use this module for acceptance tests.
-If you want to use Laravel functionality with your acceptance tests,
-for example to do test setup, you can initialize the Laravel functionality
-by adding the following lines of code to the `_bootstrap.php` file of your test suite:
+If you want to use Eloquent within your acceptance tests (paired with WebDriver) enable only
+ORM part of this module:
 
-    require 'bootstrap/autoload.php';
-    $app = require 'bootstrap/app.php';
-    $app->loadEnvironmentFrom('.env.testing');
-    $app->instance('request', new \Illuminate\Http\Request);
-    $app->make('Illuminate\Contracts\Http\Kernel')->bootstrap();
+### Example (`acceptance.suite.yml`)
 
-
-
+```yaml
+modules:
+    enabled:
+        - WebDriver:
+            browser: chrome
+            url: http://127.0.0.1:8000
+        - Laravel5:
+            part: ORM
+            environment_file: .env.testing
+```
 
 ## Actions
 
@@ -291,11 +298,13 @@ Call an Artisan command.
 <?php
 $I->callArtisan('command:name');
 $I->callArtisan('command:name', ['parameter' => 'value']);
-?>
 ```
+Use 3rd parameter to pass in custom `OutputInterface`
 
  * `param string` $command
  * `param array` $parameters
+ * `param OutputInterface` $output
+ * `return` string
 
 
 ### checkOption
@@ -555,7 +564,7 @@ $I->dontSeeFormErrors();
 ?>
 ```
 
- * `return` bool
+ * `return` void
 
 
 ### dontSeeInCurrentUrl
@@ -761,7 +770,6 @@ $I->grabAttributeFrom('#tooltip', 'title');
 ?>
 ```
 
-
  * `param` $cssOrXpath
  * `param` $attribute
 
@@ -779,7 +787,7 @@ You can set additional cookie params like `domain`, `path` in array passed as la
 
 ### grabFromCurrentUrl
  
-Executes the given regular expression against the current URI and returns the first match.
+Executes the given regular expression against the current URI and returns the first capturing group.
 If no parameters are provided, the full URI is returned.
 
 ``` php
@@ -998,6 +1006,17 @@ $I->amOnPage('test-headers.php');
 ?>
 ```
 
+To use special chars in Header Key use HTML Character Entities:
+Example:
+Header with underscore - 'Client_Id'
+should be represented as - 'Client&#x0005F;Id' or 'Client&#95;Id'
+
+```php
+<?php
+$I->haveHttpHeader('Client&#95;Id', 'Codeception');
+?>
+```
+
  * `param string` $name the name of the request header
  * `param string` $value the value to set it to for subsequent
        requests
@@ -1053,8 +1072,9 @@ $user = $I->haveRecord('App\User', array('name' => 'Davert')); // returns Eloque
 ```
 
  * `param string` $table
- * `param array` $attributes
- * `return` integer|EloquentModel
+ * `param array`  $attributes
+ * `return` EloquentModel|int
+@throws \RuntimeException
  * `[Part]` orm
 
 
@@ -1303,7 +1323,7 @@ $I->seeFormHasErrors();
 ?>
 ```
 
- * `return` bool
+ * `return` void
 
 
 ### seeInCurrentUrl
@@ -1546,6 +1566,34 @@ $I->seeResponseCodeIs(\Codeception\Util\HttpCode::OK);
 ```
 
  * `param` $code
+
+
+### seeResponseCodeIsBetween
+ 
+Checks that response code is between a certain range. Between actually means [from <= CODE <= to]
+
+ * `param` $from
+ * `param` $to
+
+
+### seeResponseCodeIsClientError
+ 
+Checks that the response code is 4xx
+
+
+### seeResponseCodeIsRedirection
+ 
+Checks that the response code 3xx
+
+
+### seeResponseCodeIsServerError
+ 
+Checks that the response code is 5xx
+
+
+### seeResponseCodeIsSuccessful
+ 
+Checks that the response code 2xx
 
 
 ### seeSessionHasValues
@@ -1874,4 +1922,4 @@ $I->uncheckOption('#notify');
 
  * `param` $option
 
-<p>&nbsp;</p><div class="alert alert-warning">Module reference is taken from the source code. <a href="https://github.com/Codeception/Codeception/tree/2.3/src/Codeception/Module/Laravel5.php">Help us to improve documentation. Edit module reference</a></div>
+<p>&nbsp;</p><div class="alert alert-warning">Module reference is taken from the source code. <a href="https://github.com/Codeception/Codeception/tree/2.4/src/Codeception/Module/Laravel5.php">Help us to improve documentation. Edit module reference</a></div>
