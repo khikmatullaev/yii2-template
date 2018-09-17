@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.0
+-- version 4.7.9
 -- https://www.phpmyadmin.net/
 --
--- Хост: 127.0.0.1
--- Время создания: Сен 06 2017 г., 15:45
--- Версия сервера: 10.1.26-MariaDB
--- Версия PHP: 7.1.8
+-- Host: 127.0.0.1
+-- Generation Time: Sep 17, 2018 at 01:24 PM
+-- Server version: 10.1.31-MariaDB
+-- PHP Version: 7.2.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,13 +19,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- База данных: `test`
+-- Database: `zoryx`
 --
 
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `auth_assignment`
+-- Table structure for table `auth_assignment`
 --
 
 CREATE TABLE `auth_assignment` (
@@ -35,7 +35,7 @@ CREATE TABLE `auth_assignment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Дамп данных таблицы `auth_assignment`
+-- Dumping data for table `auth_assignment`
 --
 
 INSERT INTO `auth_assignment` (`item_name`, `user_id`, `created_at`) VALUES
@@ -44,7 +44,7 @@ INSERT INTO `auth_assignment` (`item_name`, `user_id`, `created_at`) VALUES
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `auth_item`
+-- Table structure for table `auth_item`
 --
 
 CREATE TABLE `auth_item` (
@@ -58,7 +58,7 @@ CREATE TABLE `auth_item` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Дамп данных таблицы `auth_item`
+-- Dumping data for table `auth_item`
 --
 
 INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `created_at`, `updated_at`) VALUES
@@ -67,7 +67,7 @@ INSERT INTO `auth_item` (`name`, `type`, `description`, `rule_name`, `data`, `cr
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `auth_item_child`
+-- Table structure for table `auth_item_child`
 --
 
 CREATE TABLE `auth_item_child` (
@@ -78,7 +78,7 @@ CREATE TABLE `auth_item_child` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `auth_rule`
+-- Table structure for table `auth_rule`
 --
 
 CREATE TABLE `auth_rule` (
@@ -91,7 +91,29 @@ CREATE TABLE `auth_rule` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `migration`
+-- Table structure for table `language`
+--
+
+CREATE TABLE `language` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `code` varchar(5) COLLATE utf8_unicode_ci NOT NULL,
+  `country` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `status` int(1) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `language`
+--
+
+INSERT INTO `language` (`id`, `name`, `code`, `country`, `status`) VALUES
+(1, 'Việt Nam', 'vi', 'vn', 1),
+(2, 'United States', 'en', 'us', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `migration`
 --
 
 CREATE TABLE `migration` (
@@ -100,7 +122,7 @@ CREATE TABLE `migration` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Дамп данных таблицы `migration`
+-- Dumping data for table `migration`
 --
 
 INSERT INTO `migration` (`version`, `apply_time`) VALUES
@@ -118,6 +140,9 @@ INSERT INTO `migration` (`version`, `apply_time`) VALUES
 ('m150614_103145_update_social_account_table', 1504699718),
 ('m150623_212711_fix_username_notnull', 1504699718),
 ('m151218_234654_add_timezone_to_profile', 1504699718),
+('m160204_045439_navatech_multi_language_init', 1537183288),
+('m160213_041916_navatech_multi_language_insert', 1537183288),
+('m160507_171815_relations', 1537183289),
 ('m160929_103127_add_last_login_at_to_user_table', 1504699718),
 ('m161109_104201_rename_setting_table', 1504696313),
 ('m170323_102933_add_description_column_to_setting_table', 1504696313),
@@ -126,7 +151,64 @@ INSERT INTO `migration` (`version`, `apply_time`) VALUES
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `profile`
+-- Table structure for table `phrase`
+--
+
+CREATE TABLE `phrase` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `phrase`
+--
+
+INSERT INTO `phrase` (`id`, `name`) VALUES
+(1, 'language'),
+(2, 'phrase'),
+(3, 'name'),
+(4, 'code'),
+(5, 'country'),
+(6, 'status'),
+(7, 'translate');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `phrase_translate`
+--
+
+CREATE TABLE `phrase_translate` (
+  `id` int(11) NOT NULL,
+  `phrase_id` int(11) NOT NULL,
+  `language_id` int(11) NOT NULL,
+  `value` text COLLATE utf8_unicode_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Dumping data for table `phrase_translate`
+--
+
+INSERT INTO `phrase_translate` (`id`, `phrase_id`, `language_id`, `value`) VALUES
+(1, 1, 1, 'Ngôn ngữ'),
+(2, 1, 2, 'Language'),
+(3, 2, 1, 'Từ ngữ'),
+(4, 2, 2, 'Phrase'),
+(5, 3, 1, 'Tên'),
+(6, 3, 2, 'Name'),
+(7, 4, 1, 'Mã'),
+(8, 4, 2, 'Code'),
+(9, 5, 1, 'Quốc gia'),
+(10, 5, 2, 'Country'),
+(11, 6, 1, 'Trạng thái'),
+(12, 6, 2, 'Status'),
+(13, 7, 1, 'Dịch'),
+(14, 7, 2, 'Translate');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `profile`
 --
 
 CREATE TABLE `profile` (
@@ -142,7 +224,7 @@ CREATE TABLE `profile` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Дамп данных таблицы `profile`
+-- Dumping data for table `profile`
 --
 
 INSERT INTO `profile` (`user_id`, `name`, `public_email`, `gravatar_email`, `gravatar_id`, `location`, `website`, `bio`, `timezone`) VALUES
@@ -152,7 +234,7 @@ INSERT INTO `profile` (`user_id`, `name`, `public_email`, `gravatar_email`, `gra
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `setting`
+-- Table structure for table `setting`
 --
 
 CREATE TABLE `setting` (
@@ -168,7 +250,7 @@ CREATE TABLE `setting` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Дамп данных таблицы `setting`
+-- Dumping data for table `setting`
 --
 
 INSERT INTO `setting` (`id`, `type`, `section`, `key`, `value`, `status`, `description`, `created_at`, `updated_at`) VALUES
@@ -178,7 +260,7 @@ INSERT INTO `setting` (`id`, `type`, `section`, `key`, `value`, `status`, `descr
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `social_account`
+-- Table structure for table `social_account`
 --
 
 CREATE TABLE `social_account` (
@@ -196,7 +278,7 @@ CREATE TABLE `social_account` (
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `token`
+-- Table structure for table `token`
 --
 
 CREATE TABLE `token` (
@@ -207,7 +289,7 @@ CREATE TABLE `token` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Дамп данных таблицы `token`
+-- Dumping data for table `token`
 --
 
 INSERT INTO `token` (`user_id`, `code`, `created_at`, `type`) VALUES
@@ -217,7 +299,7 @@ INSERT INTO `token` (`user_id`, `code`, `created_at`, `type`) VALUES
 -- --------------------------------------------------------
 
 --
--- Структура таблицы `user`
+-- Table structure for table `user`
 --
 
 CREATE TABLE `user` (
@@ -237,7 +319,7 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
--- Дамп данных таблицы `user`
+-- Dumping data for table `user`
 --
 
 INSERT INTO `user` (`id`, `username`, `email`, `password_hash`, `auth_key`, `confirmed_at`, `unconfirmed_email`, `blocked_at`, `registration_ip`, `created_at`, `updated_at`, `flags`, `last_login_at`) VALUES
@@ -245,17 +327,17 @@ INSERT INTO `user` (`id`, `username`, `email`, `password_hash`, `auth_key`, `con
 (2, 'user', 'user@gmail.com', '$2y$12$XIrIVmhgs6Vf5/MpTiJYv.ul5CLPypoNloDilNJu/4xWP6uKaINkW', '3r1Y2VsH8ryB2XC8qdRFcQfdaqoIDEhA', 1504701195, NULL, NULL, '::1', 1504704438, 1504704438, 0, 1504705259);
 
 --
--- Индексы сохранённых таблиц
+-- Indexes for dumped tables
 --
 
 --
--- Индексы таблицы `auth_assignment`
+-- Indexes for table `auth_assignment`
 --
 ALTER TABLE `auth_assignment`
   ADD PRIMARY KEY (`item_name`,`user_id`);
 
 --
--- Индексы таблицы `auth_item`
+-- Indexes for table `auth_item`
 --
 ALTER TABLE `auth_item`
   ADD PRIMARY KEY (`name`),
@@ -263,38 +345,58 @@ ALTER TABLE `auth_item`
   ADD KEY `idx-auth_item-type` (`type`);
 
 --
--- Индексы таблицы `auth_item_child`
+-- Indexes for table `auth_item_child`
 --
 ALTER TABLE `auth_item_child`
   ADD PRIMARY KEY (`parent`,`child`),
   ADD KEY `child` (`child`);
 
 --
--- Индексы таблицы `auth_rule`
+-- Indexes for table `auth_rule`
 --
 ALTER TABLE `auth_rule`
   ADD PRIMARY KEY (`name`);
 
 --
--- Индексы таблицы `migration`
+-- Indexes for table `language`
+--
+ALTER TABLE `language`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `migration`
 --
 ALTER TABLE `migration`
   ADD PRIMARY KEY (`version`);
 
 --
--- Индексы таблицы `profile`
+-- Indexes for table `phrase`
+--
+ALTER TABLE `phrase`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `phrase_translate`
+--
+ALTER TABLE `phrase_translate`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `phrase_translate_fk_phrase` (`phrase_id`),
+  ADD KEY `phrase_translate_fk_language` (`language_id`);
+
+--
+-- Indexes for table `profile`
 --
 ALTER TABLE `profile`
   ADD PRIMARY KEY (`user_id`);
 
 --
--- Индексы таблицы `setting`
+-- Indexes for table `setting`
 --
 ALTER TABLE `setting`
   ADD PRIMARY KEY (`id`);
 
 --
--- Индексы таблицы `social_account`
+-- Indexes for table `social_account`
 --
 ALTER TABLE `social_account`
   ADD PRIMARY KEY (`id`),
@@ -303,13 +405,13 @@ ALTER TABLE `social_account`
   ADD KEY `fk_user_account` (`user_id`);
 
 --
--- Индексы таблицы `token`
+-- Indexes for table `token`
 --
 ALTER TABLE `token`
   ADD UNIQUE KEY `token_unique` (`user_id`,`code`,`type`);
 
 --
--- Индексы таблицы `user`
+-- Indexes for table `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
@@ -317,61 +419,89 @@ ALTER TABLE `user`
   ADD UNIQUE KEY `user_unique_email` (`email`);
 
 --
--- AUTO_INCREMENT для сохранённых таблиц
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT для таблицы `setting`
+-- AUTO_INCREMENT for table `language`
+--
+ALTER TABLE `language`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `phrase`
+--
+ALTER TABLE `phrase`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `phrase_translate`
+--
+ALTER TABLE `phrase_translate`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT for table `setting`
 --
 ALTER TABLE `setting`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
 --
--- AUTO_INCREMENT для таблицы `social_account`
+-- AUTO_INCREMENT for table `social_account`
 --
 ALTER TABLE `social_account`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
--- AUTO_INCREMENT для таблицы `user`
+-- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
 --
--- Ограничения внешнего ключа сохраненных таблиц
+-- Constraints for dumped tables
 --
 
 --
--- Ограничения внешнего ключа таблицы `auth_assignment`
+-- Constraints for table `auth_assignment`
 --
 ALTER TABLE `auth_assignment`
   ADD CONSTRAINT `auth_assignment_ibfk_1` FOREIGN KEY (`item_name`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Ограничения внешнего ключа таблицы `auth_item`
+-- Constraints for table `auth_item`
 --
 ALTER TABLE `auth_item`
   ADD CONSTRAINT `auth_item_ibfk_1` FOREIGN KEY (`rule_name`) REFERENCES `auth_rule` (`name`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Ограничения внешнего ключа таблицы `auth_item_child`
+-- Constraints for table `auth_item_child`
 --
 ALTER TABLE `auth_item_child`
   ADD CONSTRAINT `auth_item_child_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `auth_item_child_ibfk_2` FOREIGN KEY (`child`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Ограничения внешнего ключа таблицы `profile`
+-- Constraints for table `phrase_translate`
+--
+ALTER TABLE `phrase_translate`
+  ADD CONSTRAINT `phrase_translate_fk_language` FOREIGN KEY (`language_id`) REFERENCES `language` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `phrase_translate_fk_phrase` FOREIGN KEY (`phrase_id`) REFERENCES `phrase` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `profile`
 --
 ALTER TABLE `profile`
   ADD CONSTRAINT `fk_user_profile` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
--- Ограничения внешнего ключа таблицы `social_account`
+-- Constraints for table `social_account`
 --
 ALTER TABLE `social_account`
   ADD CONSTRAINT `fk_user_account` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
--- Ограничения внешнего ключа таблицы `token`
+-- Constraints for table `token`
 --
 ALTER TABLE `token`
   ADD CONSTRAINT `fk_user_token` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
