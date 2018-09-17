@@ -1,0 +1,33 @@
+{
+	"name" : "navatech/yii2-navatech-base",
+	"description" : "Yii2 Base for navatech application",
+	"type" : "yii2-extension",
+	"keywords" : [
+		"yii2",
+		"extension",
+		"navatech",
+		"base"
+	],
+	"license" : "MIT",
+	"homepage" : "https://navatech.vn",
+	"support" : {
+		"source" : "https://github.com/navatech/yii2-navatech-base"
+	},
+	"authors" : [
+		{
+			"name" : "Le Phuong",
+			"email" : "phuong17889@gmail.com"
+		}
+	],
+	"require" : {
+		"php" : ">=5.6",
+		"yiisoft/yii2" : "*",
+		"yiisoft/yii2-bootstrap" : "*",
+		"yiisoft/yii2-swiftmailer" : "*"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"navatech\\base\\" : "src/"
+		}
+	}
+}

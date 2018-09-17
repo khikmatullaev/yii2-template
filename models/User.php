@@ -2,103 +2,80 @@
 
 namespace app\models;
 
-class User extends \yii\base\Object implements \yii\web\IdentityInterface
+use Yii;
+
+class User extends \dektrium\user\models\User
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
-
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
-
     /**
      * @inheritdoc
      */
-    public static function findIdentity($id)
+    public function init()
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        $this->on(self::BEFORE_REGISTER, function() {
+            $this->username = $this->email;
+        });
+
+        parent::init();
     }
 
     /**
      * @inheritdoc
      */
-    public static function findIdentityByAccessToken($token, $type = null)
+    public function beforeSave($insert)
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
+        if( $this->isNewRecord )
+            $this->username = $this->email;
 
-        return null;
+        return parent::beforeSave($insert);
     }
 
     /**
-     * Finds user by username
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        $rules = parent::rules();
+        unset($rules['usernameRequired']);
+
+        return $rules;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'username' => 'Username',
+            'email' => 'Email',
+            'password_hash' => 'Password Hash',
+            'auth_key' => 'Auth Key',
+            'confirmed_at' => 'Confirmed At',
+            'unconfirmed_email' => 'Unconfirmed Email',
+            'blocked_at' => 'Blocked At',
+            'registration_ip' => 'Registration Ip',
+            'created_at' => 'Created At',
+            'updated_at' => 'Updated At',
+            'flags' => 'Flags',
+            'last_login_at' => 'Last Login At',
+        ];
+    }
+
+    /**
+     * Assign to the user the role
      *
-     * @param string $username
-     * @return static|null
-     */
-    public static function findByUsername($username)
-    {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAuthKey()
-    {
-        return $this->authKey;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->authKey === $authKey;
-    }
-
-    /**
-     * Validates password
+     * @param   integer  $userId  The user id
+     * @param   string   $role    The role should be assigned
      *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
+     * @return  void
+     *
+     * @throws
      */
-    public function validatePassword($password)
+    public static function assignRole($userId, $role)
     {
-        return $this->password === $password;
+        $auth = Yii::$app->authManager;
+        $authorRole = $auth->getRole($role);
+        $auth->assign($authorRole, $userId);
     }
 }

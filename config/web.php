@@ -5,8 +5,12 @@ $db = require(__DIR__ . '/db.php');
 
 $config = [
     'id' => 'trawork',
+    'language' => 'en',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap'           => [
+        'log',
+        'multiLanguage',
+    ],
     'components' => [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -35,15 +39,22 @@ $config = [
                 ],
             ],
         ],
+        'multiLanguage' => [
+            'class' => '\navatech\language\Component',
+        ],
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'enableStrictParsing' => false,
             'rules' => [
-                '<controller:\w+>/<id:\d+>' => '<controller>/view',
-                '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
+                '<module:\w+>/<controller:\w+>/<action:create|update|delete>' => '<module>/<controller>/<action>',
+
+                '<controller:\w+>/<action:\w+>/<id:\w+>' => '<controller>/<action>',
                 '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
+
+                '<module:\w+>/<controller:\w+>/<action:\w+>/<id:\w+>' => '<module>/<controller>/<action>',
+                '<module:\w+>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
             ],
         ],
         'db' => $db,
@@ -66,6 +77,9 @@ $config = [
             'confirmWithin' => 21600,
             'cost' => 12,
             'admins' => ['admin'],
+            'modelMap' => [
+                'User' => 'app\models\User',
+            ],
             'controllerMap' => [
                 'admin' => 'app\modules\admin\controllers\UserController',
                 'security' => [
@@ -84,6 +98,9 @@ $config = [
 
         'rbac' => 'dektrium\rbac\RbacWebModule',
 
+        'language' => [
+            'class'    => '\navatech\language\Module',
+        ],
         'settings' => [
             'class' => 'yii2mod\settings\Module',
         ],

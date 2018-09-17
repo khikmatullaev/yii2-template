@@ -1,0 +1,34 @@
+{
+	"name" : "navatech/yii2-multi-language",
+	"description" : "This will help multi-language for Yii2",
+	"keywords" : [
+		"yii2",
+		"multi language",
+		"multi phrase language"
+	],
+	"type" : "yii2-extension",
+	"license" : "MIT",
+	"homepage" : "https://navatech.vn",
+	"support" : {
+		"source" : "https://github.com/navatech/yii2-multi-language"
+	},
+	"authors" : [
+		{
+			"name" : "Le Phuong",
+			"email" : "phuong17889@gmail.com"
+		}
+	],
+	"require" : {
+		"navatech/yii2-navatech-base" : "1.0.0.2",
+		"kartik-v/yii2-grid" : "3.1.*",
+		"kartik-v/yii2-editable" : "1.7.*"
+	},
+	"suggest" : {
+		"navatech/yii2-localeurls" : "@dev"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"navatech\\language\\" : "src"
+		}
+	}
+}

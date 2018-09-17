@@ -36,9 +36,19 @@ class ComposerStaticInit0b64da8d9d426e5288496a16c1fc1b14
         array (
             'phpDocumentor\\Reflection\\' => 25,
         ),
+        'n' => 
+        array (
+            'navatech\\language\\' => 18,
+            'navatech\\base\\' => 14,
+        ),
         'k' => 
         array (
             'kartik\\select2\\' => 15,
+            'kartik\\popover\\' => 15,
+            'kartik\\plugins\\popover\\' => 23,
+            'kartik\\grid\\' => 12,
+            'kartik\\editable\\' => 16,
+            'kartik\\dialog\\' => 14,
             'kartik\\base\\' => 12,
         ),
         'd' => 
@@ -146,9 +156,37 @@ class ComposerStaticInit0b64da8d9d426e5288496a16c1fc1b14
             1 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
             2 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
         ),
+        'navatech\\language\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/navatech/yii2-multi-language/src',
+        ),
+        'navatech\\base\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/navatech/yii2-navatech-base/src',
+        ),
         'kartik\\select2\\' => 
         array (
             0 => __DIR__ . '/..' . '/kartik-v/yii2-widget-select2/src',
+        ),
+        'kartik\\popover\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kartik-v/yii2-popover-x',
+        ),
+        'kartik\\plugins\\popover\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kartik-v/bootstrap-popover-x',
+        ),
+        'kartik\\grid\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kartik-v/yii2-grid/src',
+        ),
+        'kartik\\editable\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kartik-v/yii2-editable/src',
+        ),
+        'kartik\\dialog\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kartik-v/yii2-dialog/src',
         ),
         'kartik\\base\\' => 
         array (
